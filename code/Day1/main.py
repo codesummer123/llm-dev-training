@@ -1,11 +1,12 @@
 import os
-
+from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 
 from prompts import SYSTEM_PROMPT
 from tools import estimate_study_time, lookup_concept, suggest_next_step
 
+load_dotenv()
 
 def build_model():
     """Initialize a tool-calling chat model from an environment variable."""
@@ -13,16 +14,15 @@ def build_model():
     if not model_name:
         raise ValueError("Please set the DAY1_MODEL environment variable.")
 
-    # TODO: Adjust model kwargs if you want tighter control over retries/timeouts.
-    return init_chat_model(model_name, temperature=0)
+    # 返回Model，超时时间15秒，重试3次
+    return init_chat_model(model_name, temperature=0, max_retries=3, timeout=15.0)
 
 
 def build_agent():
     """Create the Day1 learning assistant agent."""
     tools = [lookup_concept, suggest_next_step, estimate_study_time]
 
-    # TODO: Confirm whether you want to pass the model instance or a model string.
-    # Recommended for today: pass the initialized model instance.
+    # 使用传实例的方式来创建Agent
     model = build_model()
     return create_agent(model=model, tools=tools, system_prompt=SYSTEM_PROMPT)
 
@@ -31,9 +31,9 @@ def run_demo(user_input: str):
     """Run one agent invocation and return the raw response."""
     agent = build_agent()
 
-    # TODO: Inspect the returned structure carefully.
-    # Hint: the input shape follows the LangChain agent docs.
-    return agent.invoke({"messages": [{"role": "user", "content": user_input}]})
+    # 提炼最终的回答内容，而不是中间的结果
+    response = agent.invoke({"messages": [{"role": "user", "content": user_input}]})
+    return response["messages"][-1].content
 
 
 def main():

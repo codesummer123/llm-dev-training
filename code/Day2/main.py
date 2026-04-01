@@ -38,13 +38,30 @@ def print_trace(response):
     # 1) final assistant content
     # 2) any tool calls found in AI messages
     # Suggested path to inspect first: response["messages"]
-    raise NotImplementedError("Implement print_trace() for Day2.")
 
+    messages = response.get("messages", [])
+    tool_used = False
+
+    print("\n[工具调用追踪]")
+    for msg in messages:
+        if msg.type == "ai" and hasattr(msg, "tool_calls") and msg.tool_calls:
+            tool_used = True
+            for tool_call in msg.tool_calls:
+                print(f" -> 触发工具：{tool_call['name']}")
+                print(f" -> 插入参数：{tool_call['args']}")
+
+    if not tool_used:
+        print(f" -> 本次回答没有调用任何工具")
+
+    print("\n[最终回答]")
+    final_message = messages[-1]
+    print(final_message.content)
+    print("\n")
 
 def main():
     sample_inputs = [
         "请解释一下 LangGraph 是什么。",
-        "我今天有 30 分钟，想练工具设计，这个任务大概算什么难度？",
+        "我今天有 30 分钟，想练工具设计，这个任务大概算什么难度？我想做一个简单的练习",
         "请给我设计一个关于 LangChain tools 的代码练习任务，我现在是初级，还能投入 45 分钟。",
     ]
 

@@ -27,6 +27,7 @@ def test_create_practice_task():
             "minutes_available": 45,
         }
     )
+
     assert isinstance(result, str)
     assert "LangChain tools" in result
 

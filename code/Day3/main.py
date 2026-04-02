@@ -9,58 +9,44 @@ from schemas import StudyTask
 
 load_dotenv()
 
-
 def build_model():
-    """Initialize a chat model for Day3."""
+    """初始化模型"""
     model_name = os.getenv("DAY3_MODEL") or os.getenv("DAY2_MODEL") or os.getenv("DAY1_MODEL")
     if not model_name:
-        raise ValueError("Please set DAY3_MODEL, DAY2_MODEL, or DAY1_MODEL.")
+        raise ValueError("请设置模型名称")
 
     return init_chat_model(model_name, temperature=0, max_retries=3, timeout=20.0)
 
-
 def build_text_agent():
-    """Create a plain-text agent for comparison."""
+    """初始化文本输出类型Agent"""
     model = build_model()
-    return create_agent(model=model, tools=[], system_prompt=SYSTEM_PROMPT)
-
+    return create_agent(model=model,tools=[], system_prompt=SYSTEM_PROMPT)
 
 def build_structured_agent():
-    """Create an agent that returns structured output."""
+    """初始化结构化输出Agent"""
     model = build_model()
-    # TODO: Bind the StudyTask schema as the response_format.
-    return create_agent(
-        model=model,
-        tools=[],
-        system_prompt=SYSTEM_PROMPT,
-        response_format=StudyTask,
-    )
-
+    return create_agent(model=model, tools=[], system_prompt=SYSTEM_PROMPT, response_format=StudyTask)
 
 def invoke_text_mode(user_input: str):
-    """Return the raw response for plain-text mode."""
+    """得到文本输出Agent的响应内容"""
     agent = build_text_agent()
     return agent.invoke({"messages": [{"role": "user", "content": user_input}]})
 
-
 def invoke_structured_mode(user_input: str):
-    """Return the raw response for structured mode."""
+    """得到结构化输出Agent的响应内容"""
     agent = build_structured_agent()
     return agent.invoke({"messages": [{"role": "user", "content": user_input}]})
 
-
 def print_messages(response):
-    """Print a lightweight message trace."""
+    """打印响应消息"""
     messages = response.get("messages", [])
     print("[messages]")
     for idx, message in enumerate(messages, 1):
         print(f"{idx}. type={getattr(message, 'type', 'unknown')}")
         print(f"   content={message.content}")
 
-
 def print_structured_result(response):
-    """Print the structured result if present."""
-    # TODO: Inspect the response dict and print the structured output field if it exists.
+    """打印结构化响应详细"""
     structured_result = response.get("structured_response")
     print("[structured_response]")
     print(structured_result)

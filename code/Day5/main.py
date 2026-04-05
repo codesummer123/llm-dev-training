@@ -11,14 +11,8 @@ load_dotenv()
 
 
 def build_model():
-    """Initialize a chat model for Day5."""
-    model_name = (
-        os.getenv("DAY5_MODEL")
-        or os.getenv("DAY4_MODEL")
-        or os.getenv("DAY3_MODEL")
-        or os.getenv("DAY2_MODEL")
-        or os.getenv("DAY1_MODEL")
-    )
+    """初始化模型"""
+    model_name = os.getenv("DAY5_MODEL")
     if not model_name:
         raise ValueError("Please set DAY5_MODEL, DAY4_MODEL, DAY3_MODEL, DAY2_MODEL, or DAY1_MODEL.")
 
@@ -26,7 +20,7 @@ def build_model():
 
 
 def build_agent():
-    """Create the Day5 study coach agent with custom middleware."""
+    """创建Agent"""
     model = build_model()
     return create_agent(
         model=model,
@@ -37,12 +31,12 @@ def build_agent():
 
 
 def invoke_agent(agent, user_input: str):
-    """Run one invocation and return the raw response."""
+    """Agent调用"""
     return agent.invoke({"messages": [{"role": "user", "content": user_input}]})
 
 
 def print_last_answer(response):
-    """Print the final assistant response."""
+    """打印最终返回的message"""
     messages = response.get("messages", [])
     if not messages:
         print("[no messages]")

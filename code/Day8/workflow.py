@@ -15,39 +15,64 @@ class PersistentStudyState(TypedDict):
 
 
 def analyze_request(state: PersistentStudyState) -> dict:
-    """Analyze the request and choose a track."""
-    # TODO: Reuse Day7 logic but keep it concise.
-    raise NotImplementedError("Implement analyze_request() for Day8.")
+    if state["user_level"] == "beginner":
+        return {
+            "needs_foundation": True,
+            "track": "foundation",
+            "route_log": ["analyze_request"],
+        }
+    elif state["user_level"] == "intermediate":
+        return {
+            "needs_foundation": False,
+            "track": "standard",
+            "route_log": ["analyze_request"],
+        }
+    elif state["user_level"] == "advanced":
+        return {
+            "needs_foundation": False,
+            "track": "advanced",
+            "route_log": ["analyze_request"],
+        }
+    return {}
 
 
 def foundation_plan(state: PersistentStudyState) -> dict:
-    """Build a foundation plan."""
-    # TODO: Return plan + route_log update.
-    raise NotImplementedError("Implement foundation_plan() for Day8.")
+    new_log = state.get("route_log", []) + ["foundation_plan"]
+    return {"plan": ["需要补充基础：先看官网打好基础。"], "route_log": new_log}
 
 
 def standard_plan(state: PersistentStudyState) -> dict:
-    """Build a standard plan."""
-    # TODO: Return plan + route_log update.
-    raise NotImplementedError("Implement standard_plan() for Day8.")
+    new_log = state.get("route_log", []) + ["standard_plan"]
+    return {"plan": ["常规计划：先看一遍官网，再找教程跟着学。"], "route_log": new_log}
 
 
 def advanced_plan(state: PersistentStudyState) -> dict:
-    """Build an advanced plan."""
-    # TODO: Return plan + route_log update.
-    raise NotImplementedError("Implement advanced_plan() for Day8.")
+    new_log = state.get("route_log", []) + ["advanced_plan"]
+    return {"plan": ["高级计划：直接上手项目。"], "route_log": new_log}
 
 
 def finalize(state: PersistentStudyState) -> dict:
-    """Create a final summary."""
-    # TODO: Summarize the final route and plan.
-    raise NotImplementedError("Implement finalize() for Day8.")
+    track = state.get("track", "未知路线")
+    plan_str = "\n".join(state.get("plan", []))
+    path_str = "\n".join(state.get("route_log", []))
+
+    summary = f"""--- 专属学习规划 ---
+【选择路线】: {track}
+【学习计划】: {plan_str}
+【内部执行轨迹】: {path_str}"""
+
+    return {"final_summary": summary}
 
 
 def route_after_analysis(state: PersistentStudyState) -> str:
-    """Choose the next node based on analyzed state."""
-    # TODO: Route using needs_foundation and track.
-    raise NotImplementedError("Implement route_after_analysis() for Day8.")
+    if state.get("needs_foundation", False):
+        return "foundation_plan"
+
+    track = state.get("track", "")
+    if track == "standard":
+        return  "standard_plan"
+    else:
+        return "advanced_plan"
 
 
 def build_graph():

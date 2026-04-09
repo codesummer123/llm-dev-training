@@ -13,22 +13,42 @@ class ApprovalState(TypedDict):
 
 
 def approval_node(state: ApprovalState) -> Command[Literal["approve_node", "reject_node"]]:
-    """Pause execution and wait for an external approval decision."""
-    # TODO: Call interrupt(...) with a JSON-serializable payload that includes the plan.
-    # The resume value should become the decision here.
-    raise NotImplementedError("Implement approval_node() for Day9.")
+    """暂停执行，等待外部决策"""
+
+    # 外部展示信息
+    payload_for_human = {
+        "审批请求": "请审核以下计划",
+        "标题": state.get("plan_title"),
+        "详情": state.get("plan_details")
+    }
+
+    # 获取外部决策
+    decision = interrupt(payload_for_human)
+    print(f"decision={decision}")
+
+    # 决定走哪个分支
+    if decision:
+        return Command(goto="approve_node")
+    else:
+        return Command(goto="reject_node")
+
 
 
 def approve_node(state: ApprovalState) -> dict:
-    """Mark the plan as approved."""
-    # TODO: Update status and review_note.
-    raise NotImplementedError("Implement approve_node() for Day9.")
+    """批准"""
+    return {
+        "status": "approved",
+        "review_note": "审批通过"
+    }
+
 
 
 def reject_node(state: ApprovalState) -> dict:
-    """Mark the plan as rejected."""
-    # TODO: Update status and review_note.
-    raise NotImplementedError("Implement reject_node() for Day9.")
+    """拒绝"""
+    return {
+        "status": "rejected",
+        "review_note": "审批失败"
+    }
 
 
 def build_graph():

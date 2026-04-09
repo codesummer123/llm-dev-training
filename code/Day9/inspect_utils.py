@@ -1,10 +1,14 @@
+import json
+
+
 def format_interrupts(result) -> str:
-    """Format the interrupt payload returned by the graph."""
-    # TODO: Read result["__interrupt__"] and format the payload for display.
-    raise NotImplementedError("Implement format_interrupts() for Day9.")
+    return result.get("__interrupt__")
 
 
 def format_final_state(state: dict) -> str:
-    """Format the final state after resume."""
-    # TODO: Include status, plan_title, and review_note in a readable string.
-    raise NotImplementedError("Implement format_final_state() for Day9.")
+    return f"""
+        plan_title={state.get('plan_title')},
+        plan_details={state.get('plan_details')},
+        status={state.get('status')},
+        review_note={state.get('review_note')},
+    """
